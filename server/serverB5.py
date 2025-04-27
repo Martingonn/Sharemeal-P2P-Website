@@ -1,0 +1,116 @@
+from flask import Flask, jsonify, request, render_template, redirect, url_for
+import threading
+import random
+import os
+import shutil
+
+app = Flask(__name__)
+
+peers = {}
+peer_lock = threading.Lock()
+SECRET_TOKEN = "MY_CLIENT_SECRET"
+ADMIN_PASSWORD = "admin_password" #CHANGE THIS
+UPDATE_FOLDER = "server_update"
+BANNED_PEERS = set()
+
+# Ensure update folder exists
+if not os.path.exists(UPDATE_FOLDER):
+    os.makedirs(UPDATE_FOLDER)
+
+def get_peer_list():
+    peer_list = []
+    for pid, p in peers.items():
+        peer_list.append({
+            "id": pid,
+            "address": p['address'],
+            "files": p['files'],
+            "banned": pid in BANNED_PEERS
+        })
+    return peer_list
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        password = request.form['password']
+        if password == ADMIN_PASSWORD:
+            return redirect(url_for('admin'))
+        else:
+            return render_template('login.html', error='Invalid password')
+    return render_template('login.html')
+
+@app.route('/admin')
+def admin():
+    peer_list = get_peer_list()
+    return render_template('admin.html', peers=peer_list)
+
+@app.route('/ban_peer/<peer_id>')
+def ban_peer(peer_id):
+    if peer_id in peers:
+        BANNED_PEERS.add(peer_id)
+        print(f"Peer {peer_id} banned")
+    return redirect(url_for('admin'))
+
+@app.route('/unban_peer/<peer_id>')
+def unban_peer(peer_id):
+    if peer_id in peers:
+        BANNED_PEERS.discard(peer_id)
+        print(f"Peer {peer_id} unbanned")
+    return redirect(url_for('admin'))
+
+@app.route('/disconnect_peer/<peer_id>')
+def disconnect_peer(peer_id):
+    with peer_lock:
+        if peer_id in peers:
+            del peers[peer_id]
+            print(f"Peer {peer_id} disconnected")
+    return redirect(url_for('admin'))
+
+@app.route('/update', methods=['POST'])
+def update():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    # Save the uploaded file to the update folder
+    file_path = os.path.join(UPDATE_FOLDER, file.filename)
+    file.save(file_path)
+    print(f"Update file saved to {file_path}")
+
+    # Notify peers to update
+    for peer_id, peer_data in peers.items():
+         requests.post(f"{peer_data['address']}/update_server", json={"file_url": f"http://{request.host}/get_update/{file.filename}"})
+
+    return jsonify({"status": "Update sent to peers"})
+
+@app.route('/get_update/<filename>')
+def get_update(filename):
+    return send_from_directory(UPDATE_FOLDER, filename)
+
+@app.route('/register', methods=['POST'])
+def register_peer():
+    data = request.json
+    token = request.headers.get('X-Client-Token')
+
+    if token != SECRET_TOKEN:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    with peer_lock:
+        if data['peer_id'] in BANNED_PEERS:
+            return jsonify({"error": "Peer is banned"}), 403
+        peers[data['peer_id']] = {
+            'address': data['address'],
+            'files': data.get('files', [])
+        }
+        print(f"Peer {data['peer_id']} registered with address {data['address']}")
+        return jsonify({"status": "registered"})
+
+@app.route('/peers', methods=['GET'])
+def list_peers():
+    with peer_lock:
+        peer_list = get_peer_list()
+        return jsonify({"peers": peer_list})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
