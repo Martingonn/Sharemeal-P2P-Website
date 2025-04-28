@@ -7,5 +7,5 @@ Development was started on April 27th, 2025, by Marcin Jacek Chmiel.
 # Future additions
 <br>-test the service
 <br>-host actual website
-<br># Done
+<br>__Done__
 <br>-allow for password change
