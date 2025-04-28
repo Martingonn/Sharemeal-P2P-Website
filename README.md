@@ -5,6 +5,7 @@ A main website provides files for peers, which then distribute to other peers.
 # Original Author 
 Development was started on April 27th, 2025, by Marcin Jacek Chmiel.
 # Future additions
-<br>-test the things
+<br>-test the service
+<br>-host actual website
+<br># Done
 <br>-allow for password change
-<br>-make actual website
