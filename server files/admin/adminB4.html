@@ -1,0 +1,34 @@
+<!-- admin.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <h2>Peers</h2>
+    <ul>
+        {% for peer in peers %}
+        <li>{{ peer.id }} - {{ peer.address }} - Files: {{ peer.files }} - Banned: {{ peer.banned }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Version: {{ version }}</h2>
+    <form action="/update_version" method="post">
+        New Version: <input type="text" name="new_version">
+        <button type="submit">Update Version</button>
+    </form>
+
+    <h2>Change Password</h2>
+    <form action="/change_password" method="post">
+        New Password: <input type="password" name="new_password">
+        <button type="submit">Change Password</button>
+    </form>
+
+    <h2>Refresh Files</h2>
+    <form action="/refresh_files" method="post">
+        <button type="submit">Refresh Files</button>
+    </form>
+</body>
+</html>

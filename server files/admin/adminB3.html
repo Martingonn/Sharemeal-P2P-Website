@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Admin Console</title>
+</head>
+<body>
+ 
+ 
+ Admin Console
+ 
+
+
+ 
+ 
+ Current Version: {{ version }}
+ 
+ 
+ 
+ Update Version:
+ 
+ 
+ 
+ New Version:
+ 
+ 
+ 
+ Update
+ 
+ 
+
+
+ 
+ 
+ Peers:
+ 
+ {% for peer in peers %}
+ 
+ ID: {{ peer.id }}, Address: {{ peer.address }}
+ {% if peer.banned %}
+ (Banned)
+ {% endif %}
+ {% if not peer.banned %}
+ 
+ Ban
+ 
+ {% else %}
+ 
+ Unban
+ 
+ {% endif %}
+ 
+ Disconnect
+ 
+ {% endfor %}
+ 
+</body>
+</html>

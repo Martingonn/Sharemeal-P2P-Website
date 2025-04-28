@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Console</title>
+</head>
+<body>
+    <h2>Admin Console</h2>
+    <h3>Peers:</h3>
+    <ul>
+        {% for peer in peers %}
+            <li>
+                ID: {{ peer.id }}, Address: {{ peer.address }}
+                {% if peer.banned %}
+                    (Banned)
+                {% endif %}
+                {% if not peer.banned %}
+                    <a href="/ban_peer/{{ peer.address }}">Ban</a>
+                {% else %}
+                    <a href="/unban_peer/{{ peer.address }}">Unban</a>
+                {% endif %}
+                <a href="/disconnect_peer/{{ peer.address }}">Disconnect</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <h3>Update Server Files:</h3>
+    <form action="/update" method="post" enctype="multipart/form-data">
+        <input type="file" name="file"><br><br>
+        <input type="submit" value="Upload and Update">
+    </form>
+</body>
+</html>

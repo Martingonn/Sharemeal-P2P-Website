@@ -1,0 +1,58 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peer List</title>
+  <style>
+  table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  }
+ 
+
+  th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  }
+ 
+
+  th {
+  background-color: #f2f2f2;
+  }
+  </style>
+ </head>
+ <body>
+  <h1>Peer List</h1>
+ 
+
+  <table>
+  <thead>
+  <tr>
+  <th>Peer ID</th>
+  <th>Address</th>
+  <th>Files</th>
+  <th>Banned</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for peer in peers %}
+  <tr>
+  <td>{{ peer.id }}</td>
+  <td>{{ peer.address }}</td>
+  <td>
+  <ul>
+  {% for file in peer.files %}
+  <li>{{ file }}</li>
+  {% endfor %}
+  </ul>
+  </td>
+  <td>{{ peer.banned }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+ </body>
+ </html>
