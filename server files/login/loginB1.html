@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login</title>
+</head>
+<body>
+    <h2>Admin Login</h2>
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+    {% if too_many_attempts %}
+        <p style="color:red;">Too many failed login attempts. Please wait {{ lockout_time }} seconds.</p>
+    {% else %}
+        <form method="post">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br><br>
+            <input type="submit" value="Login">
+        </form>
+    {% endif %}
+</body>
+</html>
