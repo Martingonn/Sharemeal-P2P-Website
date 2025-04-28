@@ -8,4 +8,4 @@ Development was started on April 27th, 2025, by Marcin Jacek Chmiel.
 <br>-test the service
 <br>-host actual website
 # Done
-<br>-allow for password change
+<br>-allowed for password change on server
